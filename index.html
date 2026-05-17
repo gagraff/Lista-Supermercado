@@ -160,8 +160,10 @@
     <script>
         const STORAGE_KEY = 'supermercado_data';
         const CAT_STORAGE_KEY = 'supermercado_categorias';
+        const ESTADO_CAT_KEY = 'supermercado_estado_cat';
         
         let articulos = [];
+        let estadoCategorias = {};
         let categorias = [
             { nombre: 'Almacén', color: '#eab308' },
             { nombre: 'Verdulería', color: '#22c55e' },
@@ -181,6 +183,9 @@
             if (catGuardadas) categorias = JSON.parse(catGuardadas);
             else guardarCategorias();
             
+            const estadosGuardados = localStorage.getItem(ESTADO_CAT_KEY);
+            if (estadosGuardados) estadoCategorias = JSON.parse(estadosGuardados);
+
             actualizarSelectCategorias();
 
             const dataGuardada = localStorage.getItem(STORAGE_KEY);
@@ -191,6 +196,14 @@
 
         function guardarDatos() { localStorage.setItem(STORAGE_KEY, JSON.stringify(articulos)); recalcularTotal(); }
         function guardarCategorias() { localStorage.setItem(CAT_STORAGE_KEY, JSON.stringify(categorias)); }
+        function guardarEstadoCategorias() { localStorage.setItem(ESTADO_CAT_KEY, JSON.stringify(estadoCategorias)); }
+
+        function toggleCategoria(nombreCat) {
+            // Si no existe, es true (expandido) por defecto. Lo invertimos.
+            estadoCategorias[nombreCat] = !(estadoCategorias[nombreCat] !== false); 
+            guardarEstadoCategorias();
+            renderizarLista();
+        }
 
         function actualizarSelectCategorias() {
             const select = document.getElementById('categoriaInput');
@@ -325,26 +338,37 @@
                 const arts = grupos[categoria];
                 const subtotalCat = arts.filter(a => a.isComprado).reduce((sum, a) => sum + (a.cantidad * a.precioUnitario), 0);
                 const catObj = categorias.find(c => c.nombre === categoria) || CATEGORIA_POR_DEFECTO;
+                const isExpanded = estadoCategorias[categoria] !== false; // true por defecto
                 
                 const grupoDiv = document.createElement('div');
-                grupoDiv.className = 'rounded-xl p-2.5 sm:p-3 shadow-sm mb-3';
+                grupoDiv.className = 'rounded-xl p-2.5 sm:p-3 shadow-sm mb-3 transition-all';
                 grupoDiv.style.backgroundColor = hexToRgba(catObj.color, 0.08);
                 grupoDiv.style.border = `1px solid ${hexToRgba(catObj.color, 0.3)}`;
                 grupoDiv.style.borderLeft = `4px solid ${catObj.color}`;
                 
-                // Cabecera Categoría
+                // Cabecera Categoría (Ahora es clickeable)
                 grupoDiv.innerHTML = `
-                    <div class="flex justify-between items-center mb-2 pb-1.5" style="border-bottom: 1px solid ${hexToRgba(catObj.color, 0.2)}">
-                        <h2 class="font-bold text-gray-800 flex items-center gap-1.5 text-xs sm:text-sm">
-                            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: ${catObj.color}"></span>${categoria}
-                        </h2>
+                    <div class="flex justify-between items-center cursor-pointer pb-1.5" onclick="toggleCategoria('${categoria}')" style="${isExpanded ? `border-bottom: 1px solid ${hexToRgba(catObj.color, 0.2)}` : ''}">
+                        <div class="flex items-center gap-1.5">
+                            <button class="text-gray-500 hover:text-gray-900 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <h2 class="font-bold text-gray-800 flex items-center gap-1.5 text-xs sm:text-sm select-none">
+                                <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: ${catObj.color}"></span>${categoria}
+                            </h2>
+                        </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="resetearCategoria('${categoria}')" class="text-gray-500 hover:text-gray-900" title="Reiniciar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+                            <button onclick="event.stopPropagation(); resetearCategoria('${categoria}')" class="text-gray-500 hover:text-gray-900" title="Reiniciar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </button>
                             <span class="text-xs sm:text-sm font-bold ${subtotalCat > 0 ? 'text-green-600' : 'text-gray-500'}">$ ${formateadorMoneda.format(subtotalCat)}</span>
                         </div>
                     </div>
                 `;
                 
+                const ulWrapper = document.createElement('div');
+                ulWrapper.className = `mt-2 ${isExpanded ? 'block' : 'hidden'}`;
+
                 const ul = document.createElement('ul');
                 ul.className = 'space-y-1.5';
 
@@ -387,7 +411,9 @@
                     `;
                     ul.appendChild(li);
                 });
-                grupoDiv.appendChild(ul);
+                
+                ulWrapper.appendChild(ul);
+                grupoDiv.appendChild(ulWrapper);
                 itemList.appendChild(grupoDiv);
             }
         }
