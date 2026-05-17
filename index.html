@@ -26,7 +26,7 @@
     <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[90vh]">
         
         <!-- Header -->
-        <div class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md z-10 flex flex-col gap-2">
+        <div class="bg-blue-600 text-white p-4 sm:p-5 rounded-b-3xl shadow-md z-10 flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <h1 class="text-xl font-bold flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,26 +35,36 @@
                     Mi Supermercado
                 </h1>
                 
-                <!-- Botones de Acción Globales -->
+                <!-- Botones de AcciÃ³n Globales -->
                 <div class="flex gap-1">
-                    <!-- Botón Categorías -->
-                    <button type="button" onclick="abrirModalCategorias()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Gestionar Categorías">
+                    <!-- BotÃ³n CategorÃ­as -->
+                    <button type="button" onclick="abrirModalCategorias()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Gestionar CategorÃ­as">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                     </button>
-                    <!-- Botón Reiniciar Todo -->
+                    <!-- BotÃ³n Reiniciar Todo -->
                     <button type="button" onclick="abrirModalResetGlobal()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Reiniciar compras y precios">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
-                    <!-- Botón Vaciar Lista -->
+                    <!-- BotÃ³n Vaciar Lista -->
                     <button type="button" onclick="abrirModalVaciar()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Borrar toda la lista">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                     </button>
+                </div>
+            </div>
+
+            <!-- Nuevo Totalizador Compacto Integrado -->
+            <div class="bg-blue-800/40 rounded-2xl p-3 flex justify-between items-center mt-1">
+                <div class="flex flex-col">
+                    <p class="text-blue-100 text-xs sm:text-sm font-medium">Total Confirmado</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-2xl sm:text-3xl font-bold text-green-300" id="totalDisplay">$0,00</span>
                 </div>
             </div>
         </div>
@@ -65,7 +75,7 @@
                 <div class="flex gap-2">
                     <input type="text" id="nombreInput" required placeholder="Ej. Leche..." class="flex-1 px-3 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
                     <select id="categoriaInput" class="w-[110px] px-2 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white cursor-pointer truncate">
-                        <!-- Se llena dinámicamente -->
+                        <!-- Se llena dinÃ¡micamente -->
                     </select>
                 </div>
                 <div class="flex gap-2">
@@ -84,28 +94,15 @@
         </div>
 
         <!-- Items List Container -->
-        <div class="flex-1 overflow-y-auto p-4 bg-white">
+        <div class="flex-1 overflow-y-auto p-4 bg-white rounded-b-3xl">
             <div id="emptyState" class="hidden h-full flex flex-col items-center justify-center text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
-                <p>Tu lista está vacía.</p>
+                <p>Tu lista estÃ¡ vacÃ­a.</p>
             </div>
             <div id="itemList" class="space-y-5 pb-4">
-                <!-- Artículos insertados por JS -->
-            </div>
-        </div>
-
-        <!-- Totalizer -->
-        <div class="bg-gray-900 text-white p-5 rounded-t-3xl mt-auto shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-10">
-            <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-gray-400 text-sm font-medium mb-1">Total Confirmado</p>
-                    <p class="text-xs text-gray-500">Artículos marcados</p>
-                </div>
-                <div class="text-right">
-                    <span class="text-3xl font-bold text-green-400" id="totalDisplay">$0,00</span>
-                </div>
+                <!-- ArtÃ­culos insertados por JS -->
             </div>
         </div>
     </div>
@@ -116,11 +113,11 @@
             <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </div>
-            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">¿Vaciar toda la lista?</h3>
-            <p class="text-center text-gray-500 mb-6 text-sm">Eliminará todos los artículos. No se puede deshacer.</p>
+            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">Â¿Vaciar toda la lista?</h3>
+            <p class="text-center text-gray-500 mb-6 text-sm">EliminarÃ¡ todos los artÃ­culos. No se puede deshacer.</p>
             <div class="flex gap-3">
                 <button onclick="cerrarModal('confirmModal')" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancelar</button>
-                <button onclick="vaciarListaConfirmada()" class="flex-1 px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700">Sí, vaciar</button>
+                <button onclick="vaciarListaConfirmada()" class="flex-1 px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700">SÃ­, vaciar</button>
             </div>
         </div>
     </div>
@@ -131,43 +128,43 @@
             <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mx-auto mb-4">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             </div>
-            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">¿Reiniciar compras?</h3>
-            <p class="text-center text-gray-500 mb-6 text-sm">Esto desmarcará todos los productos y pondrá sus precios a $0 para usar la lista como recordatorio.</p>
+            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">Â¿Reiniciar compras?</h3>
+            <p class="text-center text-gray-500 mb-6 text-sm">Esto desmarcarÃ¡ todos los productos y pondrÃ¡ sus precios a $0 para usar la lista como recordatorio.</p>
             <div class="flex gap-3">
                 <button onclick="cerrarModal('resetModal')" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancelar</button>
-                <button onclick="resetGlobalConfirmado()" class="flex-1 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Sí, reiniciar</button>
+                <button onclick="resetGlobalConfirmado()" class="flex-1 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">SÃ­, reiniciar</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Gestor de Categorías -->
+    <!-- Modal: Gestor de CategorÃ­as -->
     <div id="categoriasModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-5 w-full max-w-md shadow-2xl flex flex-col h-[70vh] modal-enter">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-gray-900">Gestor de Categorías</h3>
+                <h3 class="text-xl font-bold text-gray-900">Gestor de CategorÃ­as</h3>
                 <button onclick="cerrarModal('categoriasModal')" class="text-gray-400 hover:text-gray-700 p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             
-            <!-- Agregar nueva categoría con Color -->
+            <!-- Agregar nueva categorÃ­a con Color -->
             <div class="flex gap-2 mb-4 pb-4 border-b border-gray-200 items-center">
                 <input type="color" id="nuevaCatColor" value="#3b82f6" class="w-10 h-10 p-0.5 rounded-lg border border-gray-300 cursor-pointer bg-white shrink-0" title="Color de fondo">
-                <input type="text" id="nuevaCatInput" placeholder="Nueva categoría..." class="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                <button onclick="agregarCategoria()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors">Añadir</button>
+                <input type="text" id="nuevaCatInput" placeholder="Nueva categorÃ­a..." class="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                <button onclick="agregarCategoria()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors">AÃ±adir</button>
             </div>
 
-            <!-- Lista de categorías -->
+            <!-- Lista de categorÃ­as -->
             <div class="flex-1 overflow-y-auto pr-2" id="listaCategoriasModal">
                 <!-- Se llena por JS -->
             </div>
         </div>
     </div>
 
-    <!-- Modal Auxiliar: Editar Nombre/Color Categoría -->
+    <!-- Modal Auxiliar: Editar Nombre/Color CategorÃ­a -->
     <div id="editCatModal" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Editar Categoría</h3>
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Editar CategorÃ­a</h3>
             <input type="hidden" id="editCatOldName">
             <div class="flex gap-2 mb-4">
                 <input type="color" id="editCatColor" class="w-12 h-10.5 p-0.5 rounded-xl border border-gray-300 cursor-pointer bg-white shrink-0" title="Color de fondo">
@@ -186,16 +183,16 @@
         
         let articulos = [];
         
-        // Estructura actualizada a objetos de categoría con color
+        // Estructura actualizada a objetos de categorÃ­a con color
         let categorias = [
-            { nombre: 'Almacén', color: '#eab308' },    // Amarillo
-            { nombre: 'Verdulería', color: '#22c55e' }, // Verde
-            { nombre: 'Carnicería', color: '#ef4444' }, // Rojo
-            { nombre: 'Lácteos', color: '#3b82f6' },    // Azul
+            { nombre: 'AlmacÃ©n', color: '#eab308' },    // Amarillo
+            { nombre: 'VerdulerÃ­a', color: '#22c55e' }, // Verde
+            { nombre: 'CarnicerÃ­a', color: '#ef4444' }, // Rojo
+            { nombre: 'LÃ¡cteos', color: '#3b82f6' },    // Azul
             { nombre: 'Limpieza', color: '#06b6d4' },   // Cian
             { nombre: 'Otros', color: '#8b5cf6' }       // Violeta
         ];
-        const CATEGORIA_POR_DEFECTO = { nombre: 'Sin Categoría', color: '#9ca3af' };
+        const CATEGORIA_POR_DEFECTO = { nombre: 'Sin CategorÃ­a', color: '#9ca3af' };
 
         const formateadorMoneda = new Intl.NumberFormat('es-AR', {
             minimumFractionDigits: 2, maximumFractionDigits: 2
@@ -208,11 +205,11 @@
         const precioInput = document.getElementById('precioInput');
 
         function inicializar() {
-            // Cargar y migrar categorías si es necesario
+            // Cargar y migrar categorÃ­as si es necesario
             const catGuardadas = localStorage.getItem(CAT_STORAGE_KEY);
             if (catGuardadas) {
                 const parsed = JSON.parse(catGuardadas);
-                // Lógica de migración: Si el array viejo era de strings (v2), lo pasamos a objetos (v3)
+                // LÃ³gica de migraciÃ³n: Si el array viejo era de strings (v2), lo pasamos a objetos (v3)
                 if (parsed.length > 0 && typeof parsed[0] === 'string') {
                     categorias = parsed.map(c => ({ nombre: c, color: '#3b82f6' }));
                     guardarCategorias();
@@ -224,7 +221,7 @@
             }
             actualizarSelectCategorias();
 
-            // Cargar artículos
+            // Cargar artÃ­culos
             const dataGuardada = localStorage.getItem(STORAGE_KEY);
             if (dataGuardada) articulos = JSON.parse(dataGuardada);
             
@@ -244,7 +241,7 @@
             categoriaInput.innerHTML = '';
             const todasLasCategorias = [...categorias];
             
-            // Aseguramos que "Sin Categoría" exista para seleccionar si se necesita
+            // Aseguramos que "Sin CategorÃ­a" exista para seleccionar si se necesita
             if(!todasLasCategorias.find(c => c.nombre === CATEGORIA_POR_DEFECTO.nombre)) {
                 todasLasCategorias.push(CATEGORIA_POR_DEFECTO);
             }
@@ -294,14 +291,14 @@
             const nameExists = categorias.find(c => c.nombre === newName);
 
             if (newName && newName !== CATEGORIA_POR_DEFECTO.nombre && (!nameChanged || !nameExists)) {
-                // Actualizar array de categorías
+                // Actualizar array de categorÃ­as
                 const index = categorias.findIndex(c => c.nombre === oldName);
                 if (index > -1) {
                     categorias[index].nombre = newName;
                     categorias[index].color = newColor;
                 }
                 
-                // Actualizar todos los artículos que tenían esa categoría si el nombre cambió
+                // Actualizar todos los artÃ­culos que tenÃ­an esa categorÃ­a si el nombre cambiÃ³
                 if (nameChanged) {
                     articulos.forEach(a => {
                         if (a.categoria === oldName) a.categoria = newName;
@@ -321,7 +318,7 @@
             categorias = categorias.filter(c => c.nombre !== nombreCat);
             guardarCategorias();
             
-            // Reasignar artículos huérfanos a "Sin Categoría"
+            // Reasignar artÃ­culos huÃ©rfanos a "Sin CategorÃ­a"
             articulos.forEach(a => {
                 if (a.categoria === nombreCat) a.categoria = CATEGORIA_POR_DEFECTO.nombre;
             });
@@ -474,15 +471,15 @@
                 const articulosGrupo = grupos[categoria];
                 const subtotalCategoria = articulosGrupo.filter(a => a.isComprado).reduce((sum, a) => sum + (a.cantidad * a.precioUnitario), 0);
 
-                // Buscar el color de esta categoría
+                // Buscar el color de esta categorÃ­a
                 let catColor = CATEGORIA_POR_DEFECTO.color;
                 const catObj = categorias.find(c => c.nombre === categoria);
                 if (catObj) catColor = catObj.color;
 
                 const grupoDiv = document.createElement('div');
-                // Estilo dinámico basado en el color elegido
+                // Estilo dinÃ¡mico basado en el color elegido
                 grupoDiv.className = 'rounded-2xl p-3 sm:p-4 shadow-sm mb-4 transition-colors';
-                grupoDiv.style.backgroundColor = hexToRgba(catColor, 0.08); // Fondo súper suave
+                grupoDiv.style.backgroundColor = hexToRgba(catColor, 0.08); // Fondo sÃºper suave
                 grupoDiv.style.border = `1px solid ${hexToRgba(catColor, 0.3)}`;
                 grupoDiv.style.borderLeft = `4px solid ${catColor}`; // Acento fuerte a la izquierda
                 
@@ -493,7 +490,7 @@
                             ${categoria}
                         </h2>
                         <div class="flex items-center gap-3">
-                            <button onclick="resetearCategoria('${categoria}')" class="text-gray-500 hover:text-gray-900 transition-colors" title="Reiniciar esta categoría">
+                            <button onclick="resetearCategoria('${categoria}')" class="text-gray-500 hover:text-gray-900 transition-colors" title="Reiniciar esta categorÃ­a">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             </button>
                             <span class="text-sm font-bold ${subtotalCategoria > 0 ? 'text-green-600' : 'text-gray-500'}">
@@ -513,30 +510,32 @@
                     const bgClass = articulo.isComprado ? 'bg-green-50/70 border-green-200' : 'bg-white border-gray-200 shadow-sm';
                     const textClass = articulo.isComprado ? 'text-gray-400 line-through' : 'text-gray-800';
 
-                    li.className = `flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 p-2.5 sm:p-3 border rounded-xl transition-all duration-200 ${bgClass}`;
+                    li.className = `flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3 border rounded-xl transition-all duration-200 ${bgClass}`;
                     
                     li.innerHTML = `
-                        <div class="relative flex items-center shrink-0">
+                        <div class="relative flex items-center shrink-0 pt-0.5">
                             <input type="checkbox" ${articulo.isComprado ? 'checked' : ''} onchange="toggleComprado('${articulo.id}')"
                                 class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-blue-500 cursor-pointer accent-blue-600">
                         </div>
                         
-                        <div class="flex-1 min-w-[120px]">
-                            <p class="text-sm sm:text-base font-semibold truncate ${textClass}">${articulo.nombre}</p>
-                            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                <input type="number" min="0.01" step="0.01" value="${articulo.cantidad}" onchange="actualizarValores('${articulo.id}', 'cantidad', this.value)"
-                                    class="w-16 px-1.5 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
-                                <span class="text-xs sm:text-sm font-medium text-gray-500">x $</span>
-                                <input type="number" min="0" step="0.01" value="${articulo.precioUnitario}" onchange="actualizarValores('${articulo.id}', 'precio', this.value)"
-                                    class="w-20 px-1.5 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
+                        <div class="flex-1 w-full min-w-0 flex flex-col gap-2">
+                            <p class="text-sm sm:text-base font-semibold truncate ${textClass} leading-tight">${articulo.nombre}</p>
+                            
+                            <div class="flex items-center justify-between gap-1 sm:gap-2">
+                                <button onclick="eliminarArticulo('${articulo.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg transition-colors flex items-center justify-center shrink-0" title="Eliminar">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                                
+                                <div class="flex items-center gap-1 flex-1 justify-center">
+                                    <input type="number" min="0.01" step="0.01" value="${articulo.cantidad}" onchange="actualizarValores('${articulo.id}', 'cantidad', this.value)"
+                                        class="w-12 sm:w-16 px-1 py-1 text-center text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
+                                    <span class="text-xs sm:text-sm font-medium text-gray-400 shrink-0">x$</span>
+                                    <input type="number" min="0" step="0.01" value="${articulo.precioUnitario}" onchange="actualizarValores('${articulo.id}', 'precio', this.value)"
+                                        class="w-14 sm:w-16 px-1 py-1 text-center text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
+                                </div>
+                                
+                                <span class="font-bold text-gray-900 text-sm sm:text-base whitespace-nowrap shrink-0 text-right min-w-[65px]">$ ${formateadorMoneda.format(subtotal)}</span>
                             </div>
-                        </div>
-                        
-                        <div class="text-right flex flex-col justify-between items-end gap-1.5 shrink-0 ml-auto pl-2">
-                            <span class="font-bold text-gray-900 text-sm sm:text-base whitespace-nowrap">$ ${formateadorMoneda.format(subtotal)}</span>
-                            <button onclick="eliminarArticulo('${articulo.id}')" class="text-[11px] sm:text-xs text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1.5 rounded-lg transition-colors font-medium">
-                                Eliminar
-                            </button>
                         </div>
                     `;
                     ul.appendChild(li);
