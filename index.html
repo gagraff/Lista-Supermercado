@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Supermercado Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        /* Animaciones para los modales */
+        .modal-enter { animation: fadeIn 0.2s ease-out forwards; }
+        .modal-leave { animation: fadeOut 0.2s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[90vh]">
+        
+        <!-- Header -->
+        <div class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md z-10 flex flex-col gap-2">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Mi Supermercado
+                </h1>
+                
+                <!-- Botones de Acción Globales -->
+                <div class="flex gap-1">
+                    <!-- Botón Categorías -->
+                    <button type="button" onclick="abrirModalCategorias()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Gestionar Categorías">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </button>
+                    <!-- Botón Reiniciar Todo -->
+                    <button type="button" onclick="abrirModalResetGlobal()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Reiniciar compras y precios">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                    <!-- Botón Vaciar Lista -->
+                    <button type="button" onclick="abrirModalVaciar()" class="text-blue-100 hover:text-white transition-colors bg-blue-700/50 p-2 rounded-xl" title="Borrar toda la lista">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="p-4 border-b border-gray-100 bg-gray-50 z-0">
+            <form id="addForm" class="flex flex-col gap-3">
+                <div class="flex gap-2">
+                    <input type="text" id="nombreInput" required placeholder="Ej. Leche..." class="flex-1 px-3 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                    <select id="categoriaInput" class="w-[110px] px-2 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white cursor-pointer truncate">
+                        <!-- Se llena dinámicamente -->
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <div class="w-1/3">
+                        <input type="number" id="cantidadInput" required min="0.01" step="0.01" placeholder="Cant." class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="w-2/3 relative">
+                        <span class="absolute left-3 top-2 text-gray-500 text-sm">$</span>
+                        <input type="number" id="precioInput" min="0" step="0.01" placeholder="Precio (opcional)" class="w-full pl-7 pr-3 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-xl text-sm transition-colors shadow-sm active:scale-[0.98]">
+                    Agregar a la lista
+                </button>
+            </form>
+        </div>
+
+        <!-- Items List Container -->
+        <div class="flex-1 overflow-y-auto p-4 bg-white">
+            <div id="emptyState" class="hidden h-full flex flex-col items-center justify-center text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                <p>Tu lista está vacía.</p>
+            </div>
+            <div id="itemList" class="space-y-5 pb-4">
+                <!-- Artículos insertados por JS -->
+            </div>
+        </div>
+
+        <!-- Totalizer -->
+        <div class="bg-gray-900 text-white p-5 rounded-t-3xl mt-auto shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-10">
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-gray-400 text-sm font-medium mb-1">Total Confirmado</p>
+                    <p class="text-xs text-gray-500">Artículos marcados</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-3xl font-bold text-green-400" id="totalDisplay">$0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Vaciar Lista -->
+    <div id="confirmModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">¿Vaciar toda la lista?</h3>
+            <p class="text-center text-gray-500 mb-6 text-sm">Eliminará todos los artículos. No se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal('confirmModal')" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancelar</button>
+                <button onclick="vaciarListaConfirmada()" class="flex-1 px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700">Sí, vaciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Reinicio Global -->
+    <div id="resetModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mx-auto mb-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-center text-gray-900 mb-2">¿Reiniciar compras?</h3>
+            <p class="text-center text-gray-500 mb-6 text-sm">Esto desmarcará todos los productos y pondrá sus precios a $0 para usar la lista como recordatorio.</p>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal('resetModal')" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancelar</button>
+                <button onclick="resetGlobalConfirmado()" class="flex-1 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Sí, reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Gestor de Categorías -->
+    <div id="categoriasModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-5 w-full max-w-md shadow-2xl flex flex-col h-[70vh] modal-enter">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Gestor de Categorías</h3>
+                <button onclick="cerrarModal('categoriasModal')" class="text-gray-400 hover:text-gray-700 p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <!-- Agregar nueva categoría con Color -->
+            <div class="flex gap-2 mb-4 pb-4 border-b border-gray-200 items-center">
+                <input type="color" id="nuevaCatColor" value="#3b82f6" class="w-10 h-10 p-0.5 rounded-lg border border-gray-300 cursor-pointer bg-white shrink-0" title="Color de fondo">
+                <input type="text" id="nuevaCatInput" placeholder="Nueva categoría..." class="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                <button onclick="agregarCategoria()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors">Añadir</button>
+            </div>
+
+            <!-- Lista de categorías -->
+            <div class="flex-1 overflow-y-auto pr-2" id="listaCategoriasModal">
+                <!-- Se llena por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Auxiliar: Editar Nombre/Color Categoría -->
+    <div id="editCatModal" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Editar Categoría</h3>
+            <input type="hidden" id="editCatOldName">
+            <div class="flex gap-2 mb-4">
+                <input type="color" id="editCatColor" class="w-12 h-10.5 p-0.5 rounded-xl border border-gray-300 cursor-pointer bg-white shrink-0" title="Color de fondo">
+                <input type="text" id="editCatInput" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal('editCatModal')" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50">Cancelar</button>
+                <button onclick="guardarEdicionCategoria()" class="flex-1 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'supermercado_data';
+        const CAT_STORAGE_KEY = 'supermercado_categorias';
+        
+        let articulos = [];
+        
+        // Estructura actualizada a objetos de categoría con color
+        let categorias = [
+            { nombre: 'Almacén', color: '#eab308' },    // Amarillo
+            { nombre: 'Verdulería', color: '#22c55e' }, // Verde
+            { nombre: 'Carnicería', color: '#ef4444' }, // Rojo
+            { nombre: 'Lácteos', color: '#3b82f6' },    // Azul
+            { nombre: 'Limpieza', color: '#06b6d4' },   // Cian
+            { nombre: 'Otros', color: '#8b5cf6' }       // Violeta
+        ];
+        const CATEGORIA_POR_DEFECTO = { nombre: 'Sin Categoría', color: '#9ca3af' };
+
+        const formateadorMoneda = new Intl.NumberFormat('es-AR', {
+            minimumFractionDigits: 2, maximumFractionDigits: 2
+        });
+
+        const addForm = document.getElementById('addForm');
+        const nombreInput = document.getElementById('nombreInput');
+        const categoriaInput = document.getElementById('categoriaInput');
+        const cantidadInput = document.getElementById('cantidadInput');
+        const precioInput = document.getElementById('precioInput');
+
+        function inicializar() {
+            // Cargar y migrar categorías si es necesario
+            const catGuardadas = localStorage.getItem(CAT_STORAGE_KEY);
+            if (catGuardadas) {
+                const parsed = JSON.parse(catGuardadas);
+                // Lógica de migración: Si el array viejo era de strings (v2), lo pasamos a objetos (v3)
+                if (parsed.length > 0 && typeof parsed[0] === 'string') {
+                    categorias = parsed.map(c => ({ nombre: c, color: '#3b82f6' }));
+                    guardarCategorias();
+                } else {
+                    categorias = parsed;
+                }
+            } else {
+                guardarCategorias(); // Guardar las por defecto
+            }
+            actualizarSelectCategorias();
+
+            // Cargar artículos
+            const dataGuardada = localStorage.getItem(STORAGE_KEY);
+            if (dataGuardada) articulos = JSON.parse(dataGuardada);
+            
+            renderizarLista();
+        }
+
+        function guardarDatos() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(articulos));
+            recalcularTotal();
+        }
+
+        function guardarCategorias() {
+            localStorage.setItem(CAT_STORAGE_KEY, JSON.stringify(categorias));
+        }
+
+        function actualizarSelectCategorias() {
+            categoriaInput.innerHTML = '';
+            const todasLasCategorias = [...categorias];
+            
+            // Aseguramos que "Sin Categoría" exista para seleccionar si se necesita
+            if(!todasLasCategorias.find(c => c.nombre === CATEGORIA_POR_DEFECTO.nombre)) {
+                todasLasCategorias.push(CATEGORIA_POR_DEFECTO);
+            }
+
+            todasLasCategorias.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.nombre;
+                option.textContent = cat.nombre;
+                categoriaInput.appendChild(option);
+            });
+        }
+
+        function abrirModalCategorias() {
+            renderizarListaCategoriasModal();
+            document.getElementById('categoriasModal').classList.remove('hidden');
+        }
+
+        function agregarCategoria() {
+            const input = document.getElementById('nuevaCatInput');
+            const colorInput = document.getElementById('nuevaCatColor');
+            const nuevaCat = input.value.trim();
+            const nuevoColor = colorInput.value;
+            
+            if (nuevaCat && !categorias.find(c => c.nombre === nuevaCat) && nuevaCat !== CATEGORIA_POR_DEFECTO.nombre) {
+                categorias.push({ nombre: nuevaCat, color: nuevoColor });
+                guardarCategorias();
+                actualizarSelectCategorias();
+                renderizarListaCategoriasModal();
+                input.value = '';
+            }
+        }
+
+        function abrirModalEdicionCategoria(nombreAntiguo, colorAntiguo) {
+            document.getElementById('editCatOldName').value = nombreAntiguo;
+            document.getElementById('editCatInput').value = nombreAntiguo;
+            document.getElementById('editCatColor').value = colorAntiguo;
+            document.getElementById('editCatModal').classList.remove('hidden');
+            document.getElementById('editCatInput').focus();
+        }
+
+        function guardarEdicionCategoria() {
+            const oldName = document.getElementById('editCatOldName').value;
+            const newName = document.getElementById('editCatInput').value.trim();
+            const newColor = document.getElementById('editCatColor').value;
+
+            const nameChanged = newName !== oldName;
+            const nameExists = categorias.find(c => c.nombre === newName);
+
+            if (newName && newName !== CATEGORIA_POR_DEFECTO.nombre && (!nameChanged || !nameExists)) {
+                // Actualizar array de categorías
+                const index = categorias.findIndex(c => c.nombre === oldName);
+                if (index > -1) {
+                    categorias[index].nombre = newName;
+                    categorias[index].color = newColor;
+                }
+                
+                // Actualizar todos los artículos que tenían esa categoría si el nombre cambió
+                if (nameChanged) {
+                    articulos.forEach(a => {
+                        if (a.categoria === oldName) a.categoria = newName;
+                    });
+                }
+
+                guardarCategorias();
+                guardarDatos();
+                actualizarSelectCategorias();
+                renderizarListaCategoriasModal();
+                renderizarLista();
+            }
+            cerrarModal('editCatModal');
+        }
+
+        function eliminarCategoria(nombreCat) {
+            categorias = categorias.filter(c => c.nombre !== nombreCat);
+            guardarCategorias();
+            
+            // Reasignar artículos huérfanos a "Sin Categoría"
+            articulos.forEach(a => {
+                if (a.categoria === nombreCat) a.categoria = CATEGORIA_POR_DEFECTO.nombre;
+            });
+            
+            guardarDatos();
+            actualizarSelectCategorias();
+            renderizarListaCategoriasModal();
+            renderizarLista();
+        }
+
+        function renderizarListaCategoriasModal() {
+            const listContainer = document.getElementById('listaCategoriasModal');
+            listContainer.innerHTML = '';
+            
+            categorias.forEach(cat => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 mb-2 bg-gray-50 rounded-xl border border-gray-200';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded-full shadow-sm border border-black/10" style="background-color: ${cat.color}"></div>
+                        <span class="font-medium text-gray-800">${cat.nombre}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="abrirModalEdicionCategoria('${cat.nombre}', '${cat.color}')" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Editar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        </button>
+                        <button onclick="eliminarCategoria('${cat.nombre}')" class="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Eliminar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const precioInputVal = parseFloat(precioInput.value);
+            
+            const nuevoArticulo = {
+                id: Date.now().toString(),
+                nombre: nombreInput.value.trim(),
+                categoria: categoriaInput.value,
+                cantidad: parseFloat(cantidadInput.value),
+                precioUnitario: isNaN(precioInputVal) ? 0 : precioInputVal,
+                isComprado: false
+            };
+
+            articulos.push(nuevoArticulo);
+            nombreInput.value = ''; cantidadInput.value = '1'; precioInput.value = '';
+            nombreInput.focus();
+            guardarDatos();
+            renderizarLista();
+        });
+
+        function recalcularTotal() {
+            const total = articulos.filter(a => a.isComprado).reduce((sum, a) => sum + (a.cantidad * a.precioUnitario), 0);
+            document.getElementById('totalDisplay').textContent = `$ ${formateadorMoneda.format(total)}`;
+        }
+
+        function toggleComprado(id) {
+            const articulo = articulos.find(a => a.id === id);
+            if (articulo) {
+                articulo.isComprado = !articulo.isComprado;
+                guardarDatos();
+                renderizarLista();
+            }
+        }
+
+        function actualizarValores(id, campo, valor) {
+            const articulo = articulos.find(a => a.id === id);
+            if (articulo) {
+                const numVal = parseFloat(valor.replace(',', '.'));
+                if (!isNaN(numVal) && numVal >= 0) {
+                    if (campo === 'cantidad') articulo.cantidad = numVal;
+                    if (campo === 'precio') articulo.precioUnitario = numVal;
+                    guardarDatos();
+                    renderizarLista();
+                }
+            }
+        }
+
+        function eliminarArticulo(id) {
+            articulos = articulos.filter(a => a.id !== id);
+            guardarDatos();
+            renderizarLista();
+        }
+
+        function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function abrirModalVaciar() { if(articulos.length > 0) abrirModal('confirmModal'); }
+        function abrirModalResetGlobal() { if(articulos.length > 0) abrirModal('resetModal'); }
+
+        function vaciarListaConfirmada() {
+            articulos = [];
+            guardarDatos();
+            renderizarLista();
+            cerrarModal('confirmModal');
+        }
+
+        function resetGlobalConfirmado() {
+            articulos.forEach(a => {
+                a.isComprado = false;
+                a.precioUnitario = 0;
+            });
+            guardarDatos();
+            renderizarLista();
+            cerrarModal('resetModal');
+        }
+
+        function resetearCategoria(nombreCategoria) {
+            articulos.forEach(a => {
+                if (a.categoria === nombreCategoria) {
+                    a.isComprado = false;
+                    a.precioUnitario = 0;
+                }
+            });
+            guardarDatos();
+            renderizarLista();
+        }
+
+        
+        // Convierte un color HEX a RGBA para usarlo como fondo con transparencia
+        function hexToRgba(hex, alpha) {
+            let r = parseInt(hex.slice(1, 3), 16),
+                g = parseInt(hex.slice(3, 5), 16),
+                b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function renderizarLista() {
+            const itemList = document.getElementById('itemList');
+            const emptyState = document.getElementById('emptyState');
+            itemList.innerHTML = '';
+            
+            if (articulos.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const grupos = articulos.reduce((acc, articulo) => {
+                if (!acc[articulo.categoria]) acc[articulo.categoria] = [];
+                acc[articulo.categoria].push(articulo);
+                return acc;
+            }, {});
+
+            for (const categoria in grupos) {
+                const articulosGrupo = grupos[categoria];
+                const subtotalCategoria = articulosGrupo.filter(a => a.isComprado).reduce((sum, a) => sum + (a.cantidad * a.precioUnitario), 0);
+
+                // Buscar el color de esta categoría
+                let catColor = CATEGORIA_POR_DEFECTO.color;
+                const catObj = categorias.find(c => c.nombre === categoria);
+                if (catObj) catColor = catObj.color;
+
+                const grupoDiv = document.createElement('div');
+                // Estilo dinámico basado en el color elegido
+                grupoDiv.className = 'rounded-2xl p-3 sm:p-4 shadow-sm mb-4 transition-colors';
+                grupoDiv.style.backgroundColor = hexToRgba(catColor, 0.08); // Fondo súper suave
+                grupoDiv.style.border = `1px solid ${hexToRgba(catColor, 0.3)}`;
+                grupoDiv.style.borderLeft = `4px solid ${catColor}`; // Acento fuerte a la izquierda
+                
+                const headerHtml = `
+                    <div class="flex justify-between items-center mb-3 pb-2" style="border-bottom: 1px solid ${hexToRgba(catColor, 0.2)}">
+                        <h2 class="font-bold text-gray-800 flex items-center gap-2 text-sm sm:text-base">
+                            <span class="w-3 h-3 rounded-full shadow-sm border border-black/10" style="background-color: ${catColor}"></span>
+                            ${categoria}
+                        </h2>
+                        <div class="flex items-center gap-3">
+                            <button onclick="resetearCategoria('${categoria}')" class="text-gray-500 hover:text-gray-900 transition-colors" title="Reiniciar esta categoría">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </button>
+                            <span class="text-sm font-bold ${subtotalCategoria > 0 ? 'text-green-600' : 'text-gray-500'}">
+                                $ ${formateadorMoneda.format(subtotalCategoria)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                const ul = document.createElement('ul');
+                ul.className = 'space-y-2.5';
+
+                articulosGrupo.forEach(articulo => {
+                    const subtotal = articulo.cantidad * articulo.precioUnitario;
+                    const li = document.createElement('li');
+                    
+                    const bgClass = articulo.isComprado ? 'bg-green-50/70 border-green-200' : 'bg-white border-gray-200 shadow-sm';
+                    const textClass = articulo.isComprado ? 'text-gray-400 line-through' : 'text-gray-800';
+
+                    li.className = `flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 p-2.5 sm:p-3 border rounded-xl transition-all duration-200 ${bgClass}`;
+                    
+                    li.innerHTML = `
+                        <div class="relative flex items-center shrink-0">
+                            <input type="checkbox" ${articulo.isComprado ? 'checked' : ''} onchange="toggleComprado('${articulo.id}')"
+                                class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600 bg-gray-100 border-gray-300 rounded-lg focus:ring-blue-500 cursor-pointer accent-blue-600">
+                        </div>
+                        
+                        <div class="flex-1 min-w-[120px]">
+                            <p class="text-sm sm:text-base font-semibold truncate ${textClass}">${articulo.nombre}</p>
+                            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                <input type="number" min="0.01" step="0.01" value="${articulo.cantidad}" onchange="actualizarValores('${articulo.id}', 'cantidad', this.value)"
+                                    class="w-16 px-1.5 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
+                                <span class="text-xs sm:text-sm font-medium text-gray-500">x $</span>
+                                <input type="number" min="0" step="0.01" value="${articulo.precioUnitario}" onchange="actualizarValores('${articulo.id}', 'precio', this.value)"
+                                    class="w-20 px-1.5 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none ${articulo.isComprado ? 'opacity-70' : ''}">
+                            </div>
+                        </div>
+                        
+                        <div class="text-right flex flex-col justify-between items-end gap-1.5 shrink-0 ml-auto pl-2">
+                            <span class="font-bold text-gray-900 text-sm sm:text-base whitespace-nowrap">$ ${formateadorMoneda.format(subtotal)}</span>
+                            <button onclick="eliminarArticulo('${articulo.id}')" class="text-[11px] sm:text-xs text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1.5 rounded-lg transition-colors font-medium">
+                                Eliminar
+                            </button>
+                        </div>
+                    `;
+                    ul.appendChild(li);
+                });
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = headerHtml;
+                grupoDiv.appendChild(tempDiv.firstElementChild);
+                grupoDiv.appendChild(ul);
+                itemList.appendChild(grupoDiv);
+            }
+        }
+
+        // Arrancar
+        inicializar();
+    </script>
+</body>
+</html>
