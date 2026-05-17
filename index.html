@@ -219,6 +219,7 @@
             if (dataGuardada) articulos = JSON.parse(dataGuardada);
             
             renderizarLista();
+            recalcularTotal();
         }
 
         function guardarDatos() { localStorage.setItem(STORAGE_KEY, JSON.stringify(articulos)); recalcularTotal(); }
